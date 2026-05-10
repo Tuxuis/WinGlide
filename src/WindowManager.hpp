@@ -21,7 +21,7 @@ class WindowManager {
         void Handle_Mouse_UP();
 
         HHOOK m_mouse_hook     = nullptr;
-        HHOOK m_target_window  = nullptr;
+        HWND  m_target_window  = nullptr;
         POINT m_lastMouse_pos  = {0, 0};
 
         bool m_isDragging      = false;
