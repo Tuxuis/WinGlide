@@ -85,6 +85,20 @@ void WindowManager::Handle_Mouse_MOVE(MSLLHOOKSTRUCT* mouse_struct) {
 
 
 void WindowManager::Handle_Mouse_UP() {
-    m_isDragging = false;
+    
+    if (m_isDragging) {
+        INPUT _input[2] = {};
+        
+        // 0xE8 => Unassigned
+        _input[1].ki.dwFlags  = KEYEVENTF_KEYUP;
+        _input[0].type        = INPUT_KEYBOARD;
+        _input[1].type        = INPUT_KEYBOARD;
+        _input[0].ki.wVk      = 0xE8;
+        _input[1].ki.wVk      = 0xE8;
+
+        SendInput(2, _input, sizeof(INPUT));
+        m_isDragging = false;
+    }
+
     m_target_window = nullptr;
 }
