@@ -100,8 +100,8 @@ void WindowManager::Hanlde_Mouse_DOWN(MSLLHOOKSTRUCT* mouse_struct) {
 void WindowManager::Handle_Mouse_MOVE(MSLLHOOKSTRUCT* mouse_struct) {
 
     if (m_target_window) {
-        int _newY = mouse_struct -> pt.x - m_offsetX;
-        int _newX = mouse_struct -> pt.y - m_offsetY;
+        int _newX = mouse_struct -> pt.x - m_offsetX;
+        int _newY = mouse_struct -> pt.y - m_offsetY;
         
         SetWindowPos(
             m_target_window, nullptr, 
