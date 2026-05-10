@@ -2,6 +2,7 @@
 #include "WindowManager.hpp"
 
 int main(int argc, char **argv) {
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     
     // Start Hook window hook
     WindowManager::getInstance().MOUSE_start();
