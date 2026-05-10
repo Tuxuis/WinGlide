@@ -33,7 +33,22 @@ LRESULT CALLBACK WindowManager::MOUSE_process(int n_code, WPARAM w_param, LPARAM
         // 0x8000 => Bitmask check
         bool super_press = (GetAsyncKeyState(VK_LWIN) & 0x8000) || (GetAsyncKeyState(VK_RWIN) & 0x8000);
 
+        if (w_param == WM_LBUTTONDOWN && super_press) {
+            _manager.Hanlde_Mouse_DOWN(mouse_struct);
+            return 1;
+        }
+
+        else if (w_param == WM_MOUSEMOVE && _manager.m_isDragging) {
+            _manager.Handle_Mouse_MOVE(mouse_struct);
+            return 1;
+        }
+
+        else if (w_param == WM_LBUTTONUP) {
+            _manager.Handle_Mouse_UP();
+        }
     }
+
+    return CallNextHookEx(nullptr, n_code, w_param, l_Param);
 }
 
 
@@ -66,4 +81,10 @@ void WindowManager::Handle_Mouse_MOVE(MSLLHOOKSTRUCT* mouse_struct) {
             SWP_NOSIZE | SWP_NOZORDER
         );
     }
+}
+
+
+void WindowManager::Handle_Mouse_UP() {
+    m_isDragging = false;
+    m_target_window = nullptr;
 }
