@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Windows.h>
+#include "DragController.hpp"
+
 
 class WindowManager {
     
@@ -23,10 +25,6 @@ class WindowManager {
 
         HHOOK m_mouse_hook     = nullptr;
         HHOOK m_keyboard_hook   = nullptr;
-        HWND  m_target_window  = nullptr;
-        
-        int m_offsetX = 0;
-        int m_offsetY = 0;
 
-        bool m_isDragging      = false;
+        DragController m_drag;
 };
