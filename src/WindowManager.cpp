@@ -1,4 +1,4 @@
-#include "WindowManager.hpp"
+#include "WindowManager.hh"
 
 // Create instance in memory
 WindowManager &WindowManager::getInstance() {
