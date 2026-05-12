@@ -7,7 +7,7 @@ WindowManager &WindowManager::getInstance() {
 }
 
 // Intercept Windows mouse events
-void WindowManager::Mouse_Stop() { 
+void WindowManager::Mouse_Start() { 
     m_mouse_hook = SetWindowsHookEx(WH_MOUSE_LL, MouseProcess, GetModuleHandle(NULL), 0);
     m_keyboard_hook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProcess, GetModuleHandle(NULL), 0);
 }
