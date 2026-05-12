@@ -44,7 +44,10 @@ void DragController::Drag_end() {
     if (m_isDragging) {
 
         INPUT _input[2]      = {};
-           
+
+        // Using 0xE8 because it is an "virtual" key on Windows. This
+        // helps by preventing SUPER key to open the Windows menu while
+        // the user is dragging.  
         _input[0].type       = INPUT_KEYBOARD;
         _input[1].type       = INPUT_KEYBOARD;
         _input[0].ki.wVk     = 0xE8;  // Unassigned key
