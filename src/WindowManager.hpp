@@ -9,8 +9,8 @@ class WindowManager {
     public:
         static WindowManager& getInstance();
 
-        void MOUSE_start();
-        void MOUSE_stop();
+        void Mouse_Stop();
+        void Mouse_Stop();
         void Handle_Mouse_UP();
 
     private:

@@ -7,12 +7,12 @@ WindowManager &WindowManager::getInstance() {
 }
 
 // Intercept Windows mouse events
-void WindowManager::MOUSE_start() { 
+void WindowManager::Mouse_Stop() { 
     m_mouse_hook = SetWindowsHookEx(WH_MOUSE_LL, MouseProcess, GetModuleHandle(NULL), 0);
     m_keyboard_hook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProcess, GetModuleHandle(NULL), 0);
 }
 
-void WindowManager::MOUSE_stop() {
+void WindowManager::Mouse_Stop() {
     if (m_mouse_hook) {
 
         UnhookWindowsHookEx(m_mouse_hook);
@@ -26,7 +26,7 @@ void WindowManager::MOUSE_stop() {
 }
 
 // Clean-up incase of crash or close
-WindowManager::~WindowManager() { MOUSE_stop(); }
+WindowManager::~WindowManager() { Mouse_Stop(); }
 
 // Main keyboard event callback
 LRESULT CALLBACK WindowManager::KeyboardProcess(int n_code, WPARAM w_param, LPARAM l_Param) {
