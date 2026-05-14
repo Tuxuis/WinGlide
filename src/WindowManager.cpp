@@ -1,4 +1,7 @@
 #include "WindowManager.hh"
+#include "Win32.hh"
+
+
 
 // Create instance in memory
 WindowManager &WindowManager::getInstance() {
@@ -6,27 +9,23 @@ WindowManager &WindowManager::getInstance() {
     return _INSTANCE;
 }
 
+
 // Intercept Windows mouse events
 void WindowManager::Mouse_Start() { 
-    m_mouse_hook = SetWindowsHookEx(WH_MOUSE_LL, MouseProcess, GetModuleHandle(NULL), 0);
-    m_keyboard_hook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProcess, GetModuleHandle(NULL), 0);
+    m_mouse_hook     = Win32Api::_Init_MouseHook(MouseProcess);
+    m_keyboard_hook  = Win32Api::_Init_KeyboardHook(KeyboardProcess);
 }
+
 
 void WindowManager::Mouse_Stop() {
-    if (m_mouse_hook) {
-
-        UnhookWindowsHookEx(m_mouse_hook);
-        m_mouse_hook = nullptr;
-
-    } else if (m_keyboard_hook) {
-        UnhookWindowsHookEx(m_keyboard_hook);
-        m_keyboard_hook = nullptr;        
-    }
-    
+    Win32Api::_Kill_Hook(m_mouse_hook);
+    Win32Api::_Kill_Hook(m_keyboard_hook);
 }
+
 
 // Clean-up incase of crash or close
 WindowManager::~WindowManager() { Mouse_Stop(); }
+
 
 // Main keyboard event callback
 LRESULT CALLBACK WindowManager::KeyboardProcess(int n_code, WPARAM w_param, LPARAM l_Param) {
@@ -44,8 +43,9 @@ LRESULT CALLBACK WindowManager::KeyboardProcess(int n_code, WPARAM w_param, LPAR
         }
     }
 
-    return CallNextHookEx(nullptr, n_code, w_param, l_Param);
+    return Win32Api::_Call_NextChain(n_code, w_param, l_Param);
 }
+
 
 // Main mouse event callback
 LRESULT CALLBACK WindowManager::MouseProcess(int n_code, WPARAM w_param, LPARAM l_Param) {
@@ -54,12 +54,12 @@ LRESULT CALLBACK WindowManager::MouseProcess(int n_code, WPARAM w_param, LPARAM 
         auto* mouse_struct = reinterpret_cast<MSLLHOOKSTRUCT*> (l_Param);
         auto& _manager = getInstance();
 
-        if (mouse_struct -> flags & LLKHF_INJECTED) {
-            return CallNextHookEx(nullptr, n_code, w_param, l_Param);
+        if (Win32Api::Mouse_isInjected(mouse_struct)) {
+            return Win32Api::_Call_NextChain(n_code, w_param, l_Param);
         }
 
-        // 0x8000 => Bitmask check
-        bool super_press = (GetAsyncKeyState(VK_LWIN) & 0x8000) || (GetAsyncKeyState(VK_RWIN) & 0x8000);
+
+        bool super_press = Win32Api::Digital_isWinKeyDown();
 
         if (w_param == WM_LBUTTONDOWN && super_press) {
             _manager.m_drag.Drag_begin(mouse_struct);
@@ -76,13 +76,14 @@ LRESULT CALLBACK WindowManager::MouseProcess(int n_code, WPARAM w_param, LPARAM 
         }
     }
 
-    return CallNextHookEx(nullptr, n_code, w_param, l_Param);
+    return Win32Api::_Call_NextChain(n_code, w_param, l_Param);
 }
 
 
 void WindowManager::Hanlde_Mouse_DOWN(MSLLHOOKSTRUCT* mouse_struct) {
     m_drag.Drag_begin(mouse_struct);
 }
+
 
 void WindowManager::Handle_Mouse_MOVE(MSLLHOOKSTRUCT* mouse_struct) {
     m_drag.Drag_update(mouse_struct);
