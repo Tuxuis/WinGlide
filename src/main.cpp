@@ -1,7 +1,7 @@
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 
 #include <Windows.h>
-#include "WindowManager.hpp"
+#include "WindowManager.hh"
 
 int main(int argc, char **argv) {
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
