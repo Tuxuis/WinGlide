@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Windows.h>
-#include "DragController.hpp"
+#include "DragController.hh"
 
 
 class WindowManager {
@@ -9,8 +9,8 @@ class WindowManager {
     public:
         static WindowManager& getInstance();
 
-        void MOUSE_start();
-        void MOUSE_stop();
+        void Mouse_Start();
+        void Mouse_Stop();
         void Handle_Mouse_UP();
 
     private:
