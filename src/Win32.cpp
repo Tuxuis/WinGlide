@@ -35,7 +35,7 @@ bool Win32Api::Digital_isWinKeyDown() {
 }
 
 
-void Win32Api::Signal_VirtualKeyUp(WORD vk) {
+void Win32Api::Signal_VirtualKeyTap(WORD vk) {
      INPUT _input[2]      = {};
      
      _input[0].type       = INPUT_KEYBOARD;

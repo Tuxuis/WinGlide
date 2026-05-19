@@ -45,7 +45,7 @@ void DragController::Drag_end() {
         // Using 0xE8 because it is an "virtual" key on Windows. This
         // helps by preventing SUPER key to open the Windows menu while
         // the user is dragging.
-        Win32Api::Signal_VirtualKeyUp(0xE8);
+        Win32Api::Signal_VirtualKeyTap(0xE8);
 
         m_isDragging = false;
     }

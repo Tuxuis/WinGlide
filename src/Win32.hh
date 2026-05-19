@@ -21,7 +21,7 @@ class Win32Api {
         static bool Mouse_isInjected(const MSLLHOOKSTRUCT* mouse_struct);
         static bool Digital_isWinKeyDown();
 
-        static void Signal_VirtualKeyUp(WORD vk);
+        static void Signal_VirtualKeyTap(WORD vk);
 
 
         // ----- Window -----
