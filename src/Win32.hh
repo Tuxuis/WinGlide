@@ -8,12 +8,12 @@ class Win32Api {
         
         // ----- Hooks ----- 
 
-        static HHOOK _Init_MouseHook(HOOKPROC proc);
-        static HHOOK _Init_KeyboardHook(HOOKPROC proc);
+        static HHOOK Init_MouseHook(HOOKPROC proc);
+        static HHOOK Init_KeyboardHook(HOOKPROC proc);
 
-        static void _Kill_Hook(HHOOK& H);
+        static void Kill_Hook(HHOOK& H);
 
-        static LRESULT _Call_NextChain(int n_code, WPARAM w_param, LPARAM l_param);
+        static LRESULT Call_NextChain(int n_code, WPARAM w_param, LPARAM l_param);
 
         
         // -----  Input ----- 

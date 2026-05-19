@@ -2,17 +2,17 @@
 
 
 
-HHOOK Win32Api::_Init_MouseHook(HOOKPROC proc) {
+HHOOK Win32Api::Init_MouseHook(HOOKPROC proc) {
     return SetWindowsHookEx(WH_MOUSE_LL, proc, GetModuleHandle(nullptr), 0);
 }
 
 
-HHOOK Win32Api::_Init_KeyboardHook(HOOKPROC proc) {
+HHOOK Win32Api::Init_KeyboardHook(HOOKPROC proc) {
     return SetWindowsHookEx(WH_KEYBOARD_LL, proc, GetModuleHandle(nullptr), 0);
 }
 
 
-void Win32Api::_Kill_Hook(HHOOK& H) {
+void Win32Api::Kill_Hook(HHOOK& H) {
     if (H) {
         UnhookWindowsHookEx(H);
         H = nullptr;
@@ -20,7 +20,7 @@ void Win32Api::_Kill_Hook(HHOOK& H) {
 }
 
 
-LRESULT Win32Api::_Call_NextChain(int n_code, WPARAM w_param, LPARAM l_param) {
+LRESULT Win32Api::Call_NextChain(int n_code, WPARAM w_param, LPARAM l_param) {
     return CallNextHookEx(nullptr, n_code, w_param, l_param);
 }
 
