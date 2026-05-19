@@ -26,7 +26,7 @@ LRESULT Win32Api::_Call_NextChain(int n_code, WPARAM w_param, LPARAM l_param) {
 
 
 bool Win32Api::Mouse_isInjected(const MSLLHOOKSTRUCT* mouse_struct) {
-    return (mouse_struct -> flags & LLKHF_INJECTED) != 0;
+    return (mouse_struct -> flags & LLMHF_INJECTED) != 0;
 }
 
 
