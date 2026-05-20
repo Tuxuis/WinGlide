@@ -20,7 +20,7 @@ void DragController::Drag_begin(const MSLLHOOKSTRUCT* mouse_struct) {
         m_offsetX = mouse_struct -> pt.x - _rect.left;
         m_offsetY = mouse_struct -> pt.y - _rect.top;
 
-        m_isDragging = true;
+        m_isActive = true;
     }
 }
 
@@ -40,14 +40,14 @@ void DragController::Drag_update(const MSLLHOOKSTRUCT* mouse_struct) {
 
 void DragController::Drag_end() {
 
-    if (m_isDragging) {
+    if (m_isActive) {
         
         // Using 0xE8 because it is an "virtual" key on Windows. This
         // helps by preventing SUPER key to open the Windows menu while
         // the user is dragging.
         Win32Api::Signal_VirtualKeyTap(0xE8);
 
-        m_isDragging = false;
+        m_isActive = false;
     }
     
     m_target_window = nullptr;

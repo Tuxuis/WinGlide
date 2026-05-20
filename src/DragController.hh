@@ -10,7 +10,7 @@ class DragController {
         void Drag_end();
 
         // Read only for drag state
-        bool isActive() const { return m_isDragging; }
+        bool isActive() const { return m_isActive; }
     
     private:
         HWND m_target_window = nullptr;
@@ -18,5 +18,5 @@ class DragController {
         int m_offsetX = 0;
         int m_offsetY = 0;
 
-        bool m_isDragging = false;
+        bool m_isActive = false;
 };
