@@ -36,7 +36,7 @@ LRESULT CALLBACK WindowManager::KeyboardProcess(int n_code, WPARAM w_param, LPAR
         if (keyboard_struct -> vkCode == VK_LWIN || keyboard_struct -> vkCode == VK_RWIN) {
 
             if (w_param == WM_KEYUP || w_param == WM_SYSKEYUP) {
-                if (manager.m_drag._is_Dragging()) {
+                if (manager.m_drag.isActive()) {
                     manager.m_drag.Drag_end();
                 }
             }
@@ -66,7 +66,7 @@ LRESULT CALLBACK WindowManager::MouseProcess(int n_code, WPARAM w_param, LPARAM 
             return 1;
         }
 
-        else if (w_param == WM_MOUSEMOVE && manager.m_drag._is_Dragging()) {
+        else if (w_param == WM_MOUSEMOVE && manager.m_drag.isActive()) {
             manager.m_drag.Drag_update(mouse_struct);
             //return 1;
         }

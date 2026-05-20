@@ -10,7 +10,7 @@ class DragController {
         void Drag_end();
 
         // Read only for drag state
-        bool _is_Dragging() const { return m_isDragging; }
+        bool isActive() const { return m_isDragging; }
     
     private:
         HWND m_target_window = nullptr;
