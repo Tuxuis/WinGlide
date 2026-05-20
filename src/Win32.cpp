@@ -66,3 +66,7 @@ bool Win32Api::Window_getRect(HWND _hwnd, RECT& _rect) {
 void Win32Api::Window_moveNoSize(HWND _hwnd, int x, int y) {
     SetWindowPos(_hwnd, nullptr, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 }
+
+void Win32Api::Window_resizeNoMove(HWND _hwnd, int w, int h) {
+    SetWindowPos(_hwnd, nullptr, 0, 0, w, h, SWP_NOMOVE | SWP_NOZORDER);
+}

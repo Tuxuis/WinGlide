@@ -32,4 +32,5 @@ class Win32Api {
         static bool Window_getRect(HWND _hwnd, RECT& _rect);
 
         static void Window_moveNoSize(HWND _hwnd, int x, int y);
+        static void Window_resizeNoMove(HWND _hwnd, int w, int h);
 };
