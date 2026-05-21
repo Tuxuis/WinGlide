@@ -36,8 +36,13 @@ LRESULT CALLBACK WindowManager::KeyboardProcess(int n_code, WPARAM w_param, LPAR
         if (keyboard_struct -> vkCode == VK_LWIN || keyboard_struct -> vkCode == VK_RWIN) {
 
             if (w_param == WM_KEYUP || w_param == WM_SYSKEYUP) {
+                
                 if (manager.m_drag.isActive()) {
                     manager.m_drag.Drag_end();
+                }
+
+                if (manager.m_size.isActive()) {
+                    manager.m_size.Resize_end();
                 }
             }
         }
@@ -60,6 +65,22 @@ LRESULT CALLBACK WindowManager::MouseProcess(int n_code, WPARAM w_param, LPARAM 
 
 
         bool super_press = Win32Api::Digital_isWinKeyDown();
+
+        if (w_param == WM_RBUTTONDOWN && super_press) {
+            manager.m_size.Resize_begin(mouse_struct);
+            return 1;
+
+        } 
+        
+        else if (w_param == WM_MOUSEMOVE && manager.m_size.isActive()) {
+            manager.m_size.Resize_update(mouse_struct);
+        }
+
+        else if (w_param == WM_RBUTTONUP && manager.m_size.isActive()) {
+            manager.m_size.Resize_end();
+            return 1;
+        }
+        
 
         if (w_param == WM_LBUTTONDOWN && super_press) {
             manager.m_drag.Drag_begin(mouse_struct);
