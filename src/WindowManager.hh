@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include "DragController.hh"
+#include "SizeController.hh"
 
 
 class WindowManager {
@@ -24,7 +25,8 @@ class WindowManager {
         void Hanlde_Mouse_DOWN(MSLLHOOKSTRUCT* mouse_struct);
 
         HHOOK m_mouse_hook     = nullptr;
-        HHOOK m_keyboard_hook   = nullptr;
+        HHOOK m_keyboard_hook  = nullptr;
 
         DragController m_drag;
+        SizeController m_size;
 };
