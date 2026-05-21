@@ -11,20 +11,20 @@ WindowManager &WindowManager::getInstance() {
 
 
 // Intercept Windows mouse events
-void WindowManager::Mouse_Start() { 
+void WindowManager::Init() { 
     m_mouse_hook     = Win32Api::Init_MouseHook(MouseProcess);
     m_keyboard_hook  = Win32Api::Init_KeyboardHook(KeyboardProcess);
 }
 
 
-void WindowManager::Mouse_Stop() {
+void WindowManager::Kill() {
     Win32Api::Kill_Hook(m_mouse_hook);
     Win32Api::Kill_Hook(m_keyboard_hook);
 }
 
 
 // Clean-up incase of crash or close
-WindowManager::~WindowManager() { Mouse_Stop(); }
+WindowManager::~WindowManager() { Kill(); }
 
 
 // Main keyboard event callback
