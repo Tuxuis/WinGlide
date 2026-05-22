@@ -22,4 +22,5 @@ class SizeController {
         int m_minHeight = 80;
 
         bool m_isActive = false;
+        bool m_sendWinKeyTap = false;
 };

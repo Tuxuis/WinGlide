@@ -6,7 +6,8 @@
 void DragController::Drag_begin(const MSLLHOOKSTRUCT* mouse_struct) {
     
     m_target_window = Win32Api::Window_FromPoint(mouse_struct -> pt);
-
+    m_sendWinKeyTap = Win32Api::Digital_isWinKeyDown();
+    
     if (!m_target_window) {
         return;
     }
@@ -45,10 +46,15 @@ void DragController::Drag_end() {
         // Using 0xE8 because it is an "virtual" key on Windows. This
         // helps by preventing SUPER key to open the Windows menu while
         // the user is dragging.
-        Win32Api::Signal_VirtualKeyTap(0xE8);
+
+        // Only send key tap if we started with the Win (SUPER) key.
+        if (m_sendWinKeyTap) {
+            Win32Api::Signal_VirtualKeyTap(0xE8);
+        }
 
         m_isActive = false;
     }
     
+    m_sendWinKeyTap = false;
     m_target_window = nullptr;
 }

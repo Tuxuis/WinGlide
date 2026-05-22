@@ -6,6 +6,7 @@
 void SizeController::Resize_begin(const MSLLHOOKSTRUCT* mouse_struct) {
     
     m_target_window = Win32Api::Window_FromPoint(mouse_struct -> pt);
+    m_sendWinKeyTap = Win32Api::Digital_isWinKeyDown();
 
     if (!m_target_window) {
         return;
@@ -50,11 +51,17 @@ void SizeController::Resize_update(const MSLLHOOKSTRUCT* mouse_struct) {
 void SizeController::Resize_end() {
 
     if (m_isActive) {
-        // Prevent the Windows menu from popping up on SUPER key release
-        Win32Api::Signal_VirtualKeyTap(0xE8);
+        // Prevent the Windows menu from popping up on SUPER key release, same
+        // as DragController.
+
+        // Only send tap key if Win (SUPER) started it. Same as DragController.
+        if (m_sendWinKeyTap) {
+            Win32Api::Signal_VirtualKeyTap(0xE8);
+        }
 
         m_isActive = false;
     }
 
+    m_sendWinKeyTap = false;
     m_target_window = nullptr;
 }

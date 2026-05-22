@@ -19,4 +19,5 @@ class DragController {
         int m_offsetY = 0;
 
         bool m_isActive = false;
+        bool m_sendWinKeyTap = false;
 };
