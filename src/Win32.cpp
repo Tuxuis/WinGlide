@@ -60,21 +60,25 @@ bool Win32Api::Digital_isWinKeyDown() {
 }
 
 
-void Win32Api::Signal_VirtualKeyTap(WORD vk) {
-     INPUT _input[2]      = {};
-     
-     _input[0].type       = INPUT_KEYBOARD;
-     _input[1].type       = INPUT_KEYBOARD;
-     _input[0].ki.wVk     = vk;  // Unassigned key
-     _input[1].ki.wVk     = vk;
-     _input[1].ki.dwFlags = KEYEVENTF_KEYUP;
-
-     SendInput(2, _input, sizeof(INPUT));
+bool Win32Api::Key_isInjected(const KBDLLHOOKSTRUCT* keyboard_struct) {
+    return (keyboard_struct -> flags & LLKHF_INJECTED) != 0;
 }
 
 
-void Win32Api::Signal_SuppressStartMenu() {
-   Signal_VirtualKeyTap(START_MENU_SUPPRESS_KEY); 
+void Win32Api::Signal_MaskedWinKeyUp(WORD win_vk) {
+    INPUT input[3] = {};
+
+    for (INPUT& key : input) {
+        key.type = INPUT_KEYBOARD;
+    }
+
+    input[0].ki.wVk     = START_MENU_SUPPRESS_KEY;
+    input[1].ki.wVk     = START_MENU_SUPPRESS_KEY;
+    input[1].ki.dwFlags = KEYEVENTF_KEYUP;
+    input[2].ki.wVk     = win_vk;
+    input[2].ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_EXTENDEDKEY;
+
+    SendInput(ARRAYSIZE(input), input, sizeof(INPUT));
 }
 
 
