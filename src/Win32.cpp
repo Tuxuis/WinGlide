@@ -48,25 +48,25 @@ void Win32Api::Signal_VirtualKeyTap(WORD vk) {
 }
 
 
-HWND Win32Api::Window_FromPoint(const POINT& _pt) {
-    return WindowFromPoint(_pt);
+HWND Win32Api::Window_FromPoint(const POINT& Pt) {
+    return WindowFromPoint(Pt);
 }
 
 
-HWND Win32Api::Window_getRoot(HWND _hwnd) {
-    return GetAncestor(_hwnd, GA_ROOT);
+HWND Win32Api::Window_getRoot(HWND hwnd) {
+    return GetAncestor(hwnd, GA_ROOT);
 }
 
 
-bool Win32Api::Window_getRect(HWND _hwnd, RECT& _rect) {
-    return GetWindowRect(_hwnd, &_rect) != 0l;
+bool Win32Api::Window_getRect(HWND hwnd, RECT& rect) {
+    return GetWindowRect(hwnd, &rect) != 0l;
 }
 
 
-void Win32Api::Window_moveNoSize(HWND _hwnd, int x, int y) {
-    SetWindowPos(_hwnd, nullptr, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+void Win32Api::Window_moveNoSize(HWND hwnd, int x, int y) {
+    SetWindowPos(hwnd, nullptr, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 }
 
-void Win32Api::Window_resizeNoMove(HWND _hwnd, int w, int h) {
-    SetWindowPos(_hwnd, nullptr, 0, 0, w, h, SWP_NOMOVE | SWP_NOZORDER);
+void Win32Api::Window_resizeNoMove(HWND hwnd, int w, int h) {
+    SetWindowPos(hwnd, nullptr, 0, 0, w, h, SWP_NOMOVE | SWP_NOZORDER);
 }
