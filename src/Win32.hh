@@ -22,13 +22,13 @@ class Win32Api {
         static bool Digital_isWinKeyDown();
 
         static void Signal_VirtualKeyTap(WORD vk);
+        static void Signal_SuppressStartMenu();
 
 
         // ----- Window -----
 
-        static HWND Window_FromPoint(const POINT& _pt);
-        static HWND Window_getRoot(HWND hwnd);
-        
+        static HWND Window_findTarget(const POINT& pt);
+                
         static bool Window_getRect(HWND hwnd, RECT& _rect);
 
         static void Window_moveNoSize(HWND hwnd, int x, int y);
