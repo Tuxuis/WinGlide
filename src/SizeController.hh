@@ -2,9 +2,13 @@
 
 #include <Windows.h>
 
+class WindowsMover;
+
 class SizeController {
 
     public:
+        explicit SizeController(WindowsMover& mover) : m_mover(mover) {}
+    
         bool Resize_begin(const MSLLHOOKSTRUCT* mouse_struct);
         void Resize_update(const MSLLHOOKSTRUCT* mouse_struct);
         void Resize_end();
@@ -12,6 +16,8 @@ class SizeController {
         bool isActive() const { return m_isActive; }
 
     private:
+        WindowsMover& m_mover;
+    
         HWND m_target_window = nullptr;
 
         RECT m_startRect = {};
