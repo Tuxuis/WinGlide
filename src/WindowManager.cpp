@@ -5,15 +5,22 @@
 
 // Create instance in memory
 WindowManager &WindowManager::getInstance() {
-    static WindowManager _INSTANCE;
-    return _INSTANCE;
+    static WindowManager Instance;
+    return Instance;
 }
 
 
 // Intercept Windows mouse events
-void WindowManager::Init() { 
+bool WindowManager::Init() { 
     m_mouse_hook     = Win32Api::Init_MouseHook(MouseProcess);
     m_keyboard_hook  = Win32Api::Init_KeyboardHook(KeyboardProcess);
+
+    if (!m_mouse_hook || !m_keyboard_hook) {
+        Kill();
+        return false;
+    }
+
+    return true;
 }
 
 
@@ -23,94 +30,117 @@ void WindowManager::Kill() {
 }
 
 
-// Clean-up incase of crash or close
 WindowManager::~WindowManager() { Kill(); }
 
 
 // Main keyboard event callback
-LRESULT CALLBACK WindowManager::KeyboardProcess(int n_code, WPARAM w_param, LPARAM l_Param) {
-    if (n_code >= 0) {
-        auto* keyboard_struct = reinterpret_cast<KBDLLHOOKSTRUCT*> (l_Param);
-        auto& manager = getInstance();
+LRESULT CALLBACK WindowManager::KeyboardProcess(int n_Code, WPARAM w_Param, LPARAM l_Param) {
 
-        if (keyboard_struct -> vkCode == VK_LWIN || keyboard_struct -> vkCode == VK_RWIN) {
+    if (n_Code >= 0) {
 
-            if (w_param == WM_KEYUP || w_param == WM_SYSKEYUP) {
-                
-                if (manager.m_drag.isActive()) {
-                    manager.m_drag.Drag_end();
-                }
+        const auto* keyboard_struct = reinterpret_cast<KBDLLHOOKSTRUCT*>(l_Param);
 
-                if (manager.m_size.isActive()) {
-                    manager.m_size.Resize_end();
-                }
+        const bool is_win_key = keyboard_struct -> vkCode == VK_LWIN || keyboard_struct -> vkCode == VK_RWIN;
+        const bool is_key_up  = w_Param == WM_KEYUP || w_Param == WM_SYSKEYUP;
+
+        if (is_win_key && is_key_up && !Win32Api::Key_isInjected(keyboard_struct)) {
+
+            if (getInstance().Handle_WinKey_UP(static_cast<WORD>(keyboard_struct -> vkCode))) {
+                return 1;
             }
         }
     }
 
-    return Win32Api::Call_NextChain(n_code, w_param, l_Param);
+    return Win32Api::Call_NextChain(n_Code, w_Param, l_Param);
 }
 
 
 // Main mouse event callback
-LRESULT CALLBACK WindowManager::MouseProcess(int n_code, WPARAM w_param, LPARAM l_Param) {
-    if (n_code >= 0) {
-        
-        auto* mouse_struct = reinterpret_cast<MSLLHOOKSTRUCT*> (l_Param);
-        auto& manager = getInstance();
-
-        if (Win32Api::Mouse_isInjected(mouse_struct)) {
-            return Win32Api::Call_NextChain(n_code, w_param, l_Param);
-        }
-
-
-        bool super_press = Win32Api::Digital_isWinKeyDown();
-
-        if (w_param == WM_RBUTTONDOWN && super_press) {
-            manager.m_size.Resize_begin(mouse_struct);
-            return 1;
-
-        } 
-        
-        else if (w_param == WM_MOUSEMOVE && manager.m_size.isActive()) {
-            manager.m_size.Resize_update(mouse_struct);
-        }
-
-        else if (w_param == WM_RBUTTONUP && manager.m_size.isActive()) {
-            manager.m_size.Resize_end();
-            return 1;
-        }
-        
-
-        if (w_param == WM_LBUTTONDOWN && super_press) {
-            manager.m_drag.Drag_begin(mouse_struct);
-            return 1;
-        }
-
-        else if (w_param == WM_MOUSEMOVE && manager.m_drag.isActive()) {
-            manager.m_drag.Drag_update(mouse_struct);
-            //return 1;
-        }
-
-        else if (w_param == WM_LBUTTONUP) {
-            manager.m_drag.Drag_end();
-        }
+LRESULT CALLBACK WindowManager::MouseProcess(int n_Code, WPARAM w_Param, LPARAM l_Param) {
+    
+    if (n_Code < 0) {
+        return Win32Api::Call_NextChain(n_Code, w_Param, l_Param);
     }
 
-    return Win32Api::Call_NextChain(n_code, w_param, l_Param);
+    const auto* mouse_struct = reinterpret_cast<MSLLHOOKSTRUCT*>(l_Param);
+
+    if (Win32Api::Mouse_isInjected(mouse_struct)) {
+        return Win32Api::Call_NextChain(n_Code, w_Param, l_Param);
+    }
+
+    auto& manager = getInstance();
+    bool consumed = false;
+
+    switch (w_Param) {
+
+        case WM_LBUTTONDOWN:
+        case WM_RBUTTONDOWN:
+            consumed = manager.Handle_Mouse_DOWN(w_Param, mouse_struct);
+            break;
+
+        case WM_MOUSEMOVE:
+            manager.Handle_Mouse_MOVE(mouse_struct);
+            break;
+
+        case WM_LBUTTONUP:
+        case WM_RBUTTONUP:
+            consumed = manager.Handle_Mouse_UP(w_Param);
+            break;
+    }
+
+
+    return consumed ? 1 : Win32Api::Call_NextChain(n_Code, w_Param, l_Param);
 }
 
 
-void WindowManager::Handle_Mouse_DOWN(MSLLHOOKSTRUCT* mouse_struct) {
-    m_drag.Drag_begin(mouse_struct);
+bool WindowManager::Handle_Mouse_DOWN(WPARAM button, const MSLLHOOKSTRUCT* mouse_struct) {
+    
+    if (!Win32Api::Digital_isWinKeyDown() || isBusy()) {
+        return false;
+    }
+
+    const bool started = (button == WM_LBUTTONDOWN) ? m_drag.Drag_begin(mouse_struct) : m_size.Resize_begin(mouse_struct);
+
+    if (started) {
+        m_maskWinKeyUp = true;
+    }
+
+    return started;
 }
 
 
-void WindowManager::Handle_Mouse_MOVE(MSLLHOOKSTRUCT* mouse_struct) {
-    m_drag.Drag_update(mouse_struct);
-}
-
-
-void WindowManager::Handle_Mouse_UP() {
+bool WindowManager::Handle_WinKey_UP(WORD win_vk) {
     m_drag.Drag_end();
+    m_size.Resize_end();
+
+    if (!m_maskWinKeyUp) {
+        return false;
+    }
+
+    m_maskWinKeyUp = false;
+    Win32Api::Signal_MaskedWinKeyUp(win_vk);
+
+    return true;
+}
+
+
+void WindowManager::Handle_Mouse_MOVE(const MSLLHOOKSTRUCT* mouse_struct) {
+    if (m_drag.isActive()) m_drag.Drag_update(mouse_struct);
+    if (m_size.isActive()) m_size.Resize_update(mouse_struct);
+}
+
+
+bool WindowManager::Handle_Mouse_UP(WPARAM button) {
+    
+    if (button == WM_LBUTTONUP && m_drag.isActive()) {
+        m_drag.Drag_end();
+        return true;
+    }
+
+    if (button == WM_RBUTTONUP && m_size.isActive()) {
+        m_size.Resize_end();
+        return true;
+    }
+
+    return false;
 }

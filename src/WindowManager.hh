@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include "DragController.hh"
 #include "SizeController.hh"
+#include "WindowsMover.hh"
 
 
 class WindowManager {
@@ -10,23 +11,30 @@ class WindowManager {
     public:
         static WindowManager& getInstance();
 
-        void Init();
+        bool Handle_WinKey_UP(WORD win_vk);
+
+        bool Init();
         void Kill();
-        void Handle_Mouse_UP();
 
     private:
         WindowManager() = default;
         ~WindowManager();
 
         static LRESULT CALLBACK MouseProcess(int n_Code, WPARAM w_Param, LPARAM l_Param);
-        static LRESULT CALLBACK KeyboardProcess(int n_Code, WPARAM w_param, LPARAM l_Param);
+        static LRESULT CALLBACK KeyboardProcess(int n_Code, WPARAM w_Param, LPARAM l_Param);
 
-        void Handle_Mouse_MOVE(MSLLHOOKSTRUCT* mouse_struct);
-        void Handle_Mouse_DOWN(MSLLHOOKSTRUCT* mouse_struct);
+        bool Handle_Mouse_DOWN(WPARAM button, const MSLLHOOKSTRUCT* mouse_struct);
+        void Handle_Mouse_MOVE(const MSLLHOOKSTRUCT* mouse_struct);
+        bool Handle_Mouse_UP(WPARAM button);
+
+        bool isBusy() const { return m_drag.isActive() || m_size.isActive(); }
 
         HHOOK m_mouse_hook     = nullptr;
         HHOOK m_keyboard_hook  = nullptr;
 
-        DragController m_drag;
-        SizeController m_size;
+        WindowsMover m_mover;
+        DragController m_drag { m_mover };
+        SizeController m_size { m_mover };
+
+        bool m_maskWinKeyUp = false;
 };

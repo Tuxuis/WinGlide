@@ -2,16 +2,22 @@
 
 #include <Windows.h>
 
+class WindowsMover;
+
 class SizeController {
 
     public:
-        void Resize_begin(const MSLLHOOKSTRUCT* mouse_struct);
+        explicit SizeController(WindowsMover& mover) : m_mover(mover) {}
+    
+        bool Resize_begin(const MSLLHOOKSTRUCT* mouse_struct);
         void Resize_update(const MSLLHOOKSTRUCT* mouse_struct);
         void Resize_end();
         
         bool isActive() const { return m_isActive; }
 
     private:
+        WindowsMover& m_mover;
+    
         HWND m_target_window = nullptr;
 
         RECT m_startRect = {};
@@ -22,5 +28,4 @@ class SizeController {
         int m_minHeight = 80;
 
         bool m_isActive = false;
-        bool m_sendWinKeyTap = false;
 };

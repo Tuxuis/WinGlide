@@ -1,67 +1,48 @@
 #include "SizeController.hh"
+#include "WindowsMover.hh"
 #include "Win32.hh"
 
 
 
-void SizeController::Resize_begin(const MSLLHOOKSTRUCT* mouse_struct) {
+bool SizeController::Resize_begin(const MSLLHOOKSTRUCT* mouse_struct) {
     
-    m_target_window = Win32Api::Window_FromPoint(mouse_struct -> pt);
-    m_sendWinKeyTap = Win32Api::Digital_isWinKeyDown();
+    HWND target = Win32Api::Window_findTarget(mouse_struct -> pt);
 
-    if (!m_target_window) {
-        return;
+    RECT rect;
+
+    if (!target || !Win32Api::Window_getRect(target, rect)) {
+        return false;
     }
 
-    m_target_window = Win32Api::Window_getRoot(m_target_window);
+    m_target_window = target;
+    m_startRect     = rect;
+    m_offsetX       = rect.right  - mouse_struct -> pt.x;
+    m_offsetY       = rect.bottom - mouse_struct -> pt.y;
+    m_isActive      = true;
 
-    RECT _rect;
-    if (!Win32Api::Window_getRect(m_target_window, _rect)) {
-        m_target_window = nullptr;
-        return;
-    }
-
-    m_startRect = _rect;
-
-    m_offsetX = _rect.right - mouse_struct -> pt.x;
-    m_offsetY = _rect.bottom - mouse_struct -> pt.y;
-
-    m_isActive = true;
+    return true;
 }
 
 
 void SizeController::Resize_update(const MSLLHOOKSTRUCT* mouse_struct) {
-    
-    if (!m_target_window) {
+    if (!m_isActive) {
         return;
     }
 
-    const int nRight = mouse_struct -> pt.x + m_offsetX;
-    const int nBottom = mouse_struct -> pt.y + m_offsetY;
+    const int newRight  = mouse_struct -> pt.x + m_offsetX;
+    const int newBottom = mouse_struct -> pt.y + m_offsetY;
 
-    int nWidth = nRight - m_startRect.left;
-    int nHeight = nBottom - m_startRect.top;
+    int newWidth  = newRight  - m_startRect.left;
+    int newHeight = newBottom - m_startRect.top;
 
-    if (nWidth < m_minWidth) nWidth = m_minWidth;
-    if (nHeight < m_minHeight) nHeight = m_minHeight;
+    if (newWidth  < m_minWidth)  newWidth  = m_minWidth;
+    if (newHeight < m_minHeight) newHeight = m_minHeight;
 
-    Win32Api::Window_resizeNoMove(m_target_window, nWidth, nHeight);
+   m_mover.Request_resize(m_target_window, newWidth, newHeight);
 }
 
 
 void SizeController::Resize_end() {
-
-    if (m_isActive) {
-        // Prevent the Windows menu from popping up on SUPER key release, same
-        // as DragController.
-
-        // Only send tap key if Win (SUPER) started it. Same as DragController.
-        if (m_sendWinKeyTap) {
-            Win32Api::Signal_VirtualKeyTap(0xE8);
-        }
-
-        m_isActive = false;
-    }
-
-    m_sendWinKeyTap = false;
+    m_isActive      = false;
     m_target_window = nullptr;
 }

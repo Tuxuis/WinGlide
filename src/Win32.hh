@@ -13,7 +13,7 @@ class Win32Api {
 
         static void Kill_Hook(HHOOK& H);
 
-        static LRESULT Call_NextChain(int n_code, WPARAM w_param, LPARAM l_param);
+        static LRESULT Call_NextChain(int n_Code, WPARAM w_Param, LPARAM l_Param);
 
         
         // -----  Input ----- 
@@ -21,16 +21,15 @@ class Win32Api {
         static bool Mouse_isInjected(const MSLLHOOKSTRUCT* mouse_struct);
         static bool Digital_isWinKeyDown();
 
-        static void Signal_VirtualKeyTap(WORD vk);
-
+        static bool Key_isInjected(const KBDLLHOOKSTRUCT* keyboard_struct);
+        static void Signal_MaskedWinKeyUp(WORD win_vk);
 
         // ----- Window -----
 
-        static HWND Window_FromPoint(const POINT& _pt);
-        static HWND Window_getRoot(HWND _hwnd);
-        
-        static bool Window_getRect(HWND _hwnd, RECT& _rect);
+        static HWND Window_findTarget(const POINT& pt);
+                
+        static bool Window_getRect(HWND hwnd, RECT& _rect);
 
-        static void Window_moveNoSize(HWND _hwnd, int x, int y);
-        static void Window_resizeNoMove(HWND _hwnd, int w, int h);
+        static void Window_moveNoSize(HWND hwnd, int x, int y);
+        static void Window_resizeNoMove(HWND hwnd, int w, int h);
 };
