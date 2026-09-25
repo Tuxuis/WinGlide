@@ -6,14 +6,14 @@
 #include <thread>
 
 
-class WindowMover {
+class WindowsMover {
 
     public:
-        WindowMover();
-        ~WindowMover();
+        WindowsMover();
+        ~WindowsMover();
 
-        WindowMover(const WindowMover&)            = delete;
-        WindowMover& operator=(const WindowMover&) = delete;
+        WindowsMover(const WindowsMover&)            = delete;
+        WindowsMover& operator=(const WindowsMover&) = delete;
 
         void Request_move(HWND hwnd, int x, int y);
         void Request_resize(HWND hwnd, int w, int h);

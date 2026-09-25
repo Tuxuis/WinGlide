@@ -3,10 +3,10 @@
 
 
 
-WindowMover::WindowMover() : m_worker(&WindowMover::Run, this) {}
+WindowsMover::WindowsMover() : m_worker(&WindowsMover::Run, this) {}
 
 
-WindowMover::~WindowMover() {
+WindowsMover::~WindowsMover() {
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_stop = true;
@@ -17,17 +17,17 @@ WindowMover::~WindowMover() {
 }
 
 
-void WindowMover::Request_move(HWND hwnd, int x, int y) {
+void WindowsMover::Request_move(HWND hwnd, int x, int y) {
     Submit({ hwnd, Action::Move, x, y, 0, 0 });
 }
 
 
-void WindowMover::Request_resize(HWND hwnd, int w, int h) {
+void WindowsMover::Request_resize(HWND hwnd, int w, int h) {
     Submit({ hwnd, Action::Resize, 0, 0, w, h });
 }
 
 
-void WindowMover::Submit(const Request& request) {
+void WindowsMover::Submit(const Request& request) {
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_pending    = request;
@@ -38,7 +38,7 @@ void WindowMover::Submit(const Request& request) {
 }
 
 
-void WindowMover::Run() {
+void WindowsMover::Run() {
     std::unique_lock<std::mutex> lock(m_mutex);
 
     while (true) {
@@ -59,7 +59,7 @@ void WindowMover::Run() {
 }
 
 
-void WindowMover::Apply(const Request& request) {
+void WindowsMover::Apply(const Request& request) {
 
     switch (request.action) {
 
