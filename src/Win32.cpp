@@ -2,6 +2,30 @@
 
 
 
+namespace {
+
+    constexpr WORD START_MENU_SUPPRESS_KEY = 0xE8;
+    constexpr UINT NON_BLOCKING_POS_FLAGS = SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS;
+
+    bool Window_isShell(HWND hwnd) {
+        static constexpr const wchar_t* SHELL_CLASS[] = {
+            L"Progman", L"WorkerW", L"Shell_TrayWnd", L"Shell_SecondaryTrayWnd"
+        };
+
+        wchar_t class_name[64] = {};
+        GetClassNameW(hwnd, class_name, ARRAYSIZE(class_name));
+
+        for (const wchar_t* shell_class : SHELL_CLASS) {
+            if (wcscmp(class_name, shell_class) == 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+
 HHOOK Win32Api::Init_MouseHook(HOOKPROC proc) {
     return SetWindowsHookEx(WH_MOUSE_LL, proc, GetModuleHandle(nullptr), 0);
 }
@@ -48,13 +72,29 @@ void Win32Api::Signal_VirtualKeyTap(WORD vk) {
 }
 
 
-HWND Win32Api::Window_FromPoint(const POINT& Pt) {
-    return WindowFromPoint(Pt);
+void Win32Api::Signal_SuppressStartMenu() {
+   Signal_VirtualKeyTap(START_MENU_SUPPRESS_KEY); 
 }
 
 
-HWND Win32Api::Window_getRoot(HWND hwnd) {
-    return GetAncestor(hwnd, GA_ROOT);
+HWND Win32Api::Window_findTarget(const POINT& pt) {
+    HWND hwnd = WindowFromPoint(pt);
+
+    if (!hwnd) {
+        return nullptr;
+    }
+
+    hwnd = GetAncestor(hwnd, GA_ROOT);
+
+    if (!hwnd || Window_isShell(hwnd)) {
+        return nullptr;
+    }
+
+    if (!IsWindowVisible(hwnd) || IsZoomed(hwnd) || IsIconic(hwnd)) {
+        return nullptr;
+    }
+
+    return hwnd;
 }
 
 
@@ -64,9 +104,9 @@ bool Win32Api::Window_getRect(HWND hwnd, RECT& rect) {
 
 
 void Win32Api::Window_moveNoSize(HWND hwnd, int x, int y) {
-    SetWindowPos(hwnd, nullptr, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+    SetWindowPos(hwnd, nullptr, x, y, 0, 0, SWP_NOSIZE | NON_BLOCKING_POS_FLAGS);
 }
 
 void Win32Api::Window_resizeNoMove(HWND hwnd, int w, int h) {
-    SetWindowPos(hwnd, nullptr, 0, 0, w, h, SWP_NOMOVE | SWP_NOZORDER);
+    SetWindowPos(hwnd, nullptr, 0, 0, w, h, SWP_NOMOVE | NON_BLOCKING_POS_FLAGS);
 }
