@@ -13,7 +13,7 @@ class Win32Api {
 
         static void Kill_Hook(HHOOK& H);
 
-        static LRESULT Call_NextChain(int n_code, WPARAM w_param, LPARAM l_param);
+        static LRESULT Call_NextChain(int n_Code, WPARAM w_Param, LPARAM l_Param);
 
         
         // -----  Input ----- 
@@ -27,10 +27,10 @@ class Win32Api {
         // ----- Window -----
 
         static HWND Window_FromPoint(const POINT& _pt);
-        static HWND Window_getRoot(HWND _hwnd);
+        static HWND Window_getRoot(HWND hwnd);
         
-        static bool Window_getRect(HWND _hwnd, RECT& _rect);
+        static bool Window_getRect(HWND hwnd, RECT& _rect);
 
-        static void Window_moveNoSize(HWND _hwnd, int x, int y);
-        static void Window_resizeNoMove(HWND _hwnd, int w, int h);
+        static void Window_moveNoSize(HWND hwnd, int x, int y);
+        static void Window_resizeNoMove(HWND hwnd, int w, int h);
 };

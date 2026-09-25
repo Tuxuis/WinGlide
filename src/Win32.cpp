@@ -20,8 +20,8 @@ void Win32Api::Kill_Hook(HHOOK& H) {
 }
 
 
-LRESULT Win32Api::Call_NextChain(int n_code, WPARAM w_param, LPARAM l_param) {
-    return CallNextHookEx(nullptr, n_code, w_param, l_param);
+LRESULT Win32Api::Call_NextChain(int n_Code, WPARAM w_Param, LPARAM l_Param) {
+    return CallNextHookEx(nullptr, n_Code, w_Param, l_Param);
 }
 
 
