@@ -101,7 +101,7 @@ LRESULT CALLBACK WindowManager::MouseProcess(int n_code, WPARAM w_param, LPARAM 
 }
 
 
-void WindowManager::Hanlde_Mouse_DOWN(MSLLHOOKSTRUCT* mouse_struct) {
+void WindowManager::Handle_Mouse_DOWN(MSLLHOOKSTRUCT* mouse_struct) {
     m_drag.Drag_begin(mouse_struct);
 }
 
