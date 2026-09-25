@@ -1,4 +1,5 @@
 #include "SizeController.hh"
+#include "WindowsMover.hh"
 #include "Win32.hh"
 
 
@@ -37,7 +38,7 @@ void SizeController::Resize_update(const MSLLHOOKSTRUCT* mouse_struct) {
     if (newWidth  < m_minWidth)  newWidth  = m_minWidth;
     if (newHeight < m_minHeight) newHeight = m_minHeight;
 
-    Win32Api::Window_resizeNoMove(m_target_window, newWidth, newHeight);
+   m_mover.Request_resize(m_target_window, newWidth, newHeight);
 }
 
 
