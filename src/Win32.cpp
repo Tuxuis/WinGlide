@@ -6,6 +6,7 @@ namespace {
 
     constexpr WORD START_MENU_SUPPRESS_KEY = 0xE8;
     constexpr UINT NON_BLOCKING_POS_FLAGS = SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS;
+    constexpr UINT POS_FLAGS = SWP_NOZORDER | SWP_NOACTIVATE;
 
     bool Window_isShell(HWND hwnd) {
         static constexpr const wchar_t* SHELL_CLASS[] = {
@@ -104,9 +105,9 @@ bool Win32Api::Window_getRect(HWND hwnd, RECT& rect) {
 
 
 void Win32Api::Window_moveNoSize(HWND hwnd, int x, int y) {
-    SetWindowPos(hwnd, nullptr, x, y, 0, 0, SWP_NOSIZE | NON_BLOCKING_POS_FLAGS);
+    SetWindowPos(hwnd, nullptr, x, y, 0, 0, SWP_NOSIZE | POS_FLAGS);
 }
 
 void Win32Api::Window_resizeNoMove(HWND hwnd, int w, int h) {
-    SetWindowPos(hwnd, nullptr, 0, 0, w, h, SWP_NOMOVE | NON_BLOCKING_POS_FLAGS);
+    SetWindowPos(hwnd, nullptr, 0, 0, w, h, SWP_NOMOVE | POS_FLAGS);
 }
