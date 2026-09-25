@@ -1,4 +1,5 @@
 #include "DragController.hh"
+#include "WindowsMover.hh"
 #include "Win32.hh"
 
 
@@ -31,7 +32,7 @@ void DragController::Drag_update(const MSLLHOOKSTRUCT* mouse_struct) {
     const int newX = mouse_struct -> pt.x - m_offsetX;
     const int newY = mouse_struct -> pt.y - m_offsetY;
 
-    Win32Api::Window_moveNoSize(m_target_window, newX, newY);
+    m_mover.Request_move(m_target_window, newX, newY);
 }
 
 
