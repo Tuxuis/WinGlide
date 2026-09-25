@@ -5,7 +5,7 @@
 class DragController {
 
     public:
-        void Drag_begin(const MSLLHOOKSTRUCT* mouse_struct);
+        bool Drag_begin(const MSLLHOOKSTRUCT* mouse_struct);
         void Drag_update(const MSLLHOOKSTRUCT* mouse_struct);
         void Drag_end();
 
