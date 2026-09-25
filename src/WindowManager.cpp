@@ -43,13 +43,11 @@ LRESULT CALLBACK WindowManager::KeyboardProcess(int n_Code, WPARAM w_Param, LPAR
         const bool is_win_key = keyboard_struct -> vkCode == VK_LWIN || keyboard_struct -> vkCode == VK_RWIN;
         const bool is_key_up  = w_Param == WM_KEYUP || w_Param == WM_SYSKEYUP;
 
-        if (is_win_key && is_key_up) {
+        if (is_win_key && is_key_up && !Win32Api::Key_isInjected(keyboard_struct)) {
 
-            auto& manager = getInstance();
-
-            manager.m_drag.Drag_end();
-            manager.m_size.Resize_end();
-            
+            if (getInstance().Handle_WinKey_UP(static_cast<WORD>(keyboard_struct -> vkCode))) {
+                return 1;
+            }
         }
     }
 
@@ -103,12 +101,26 @@ bool WindowManager::Handle_Mouse_DOWN(WPARAM button, const MSLLHOOKSTRUCT* mouse
 
     const bool started = (button == WM_LBUTTONDOWN) ? m_drag.Drag_begin(mouse_struct) : m_size.Resize_begin(mouse_struct);
 
-    // Must be sent while Win is still held
     if (started) {
-        Win32Api::Signal_SuppressStartMenu();
+        m_maskWinKeyUp = true;
     }
 
     return started;
+}
+
+
+bool WindowManager::Handle_WinKey_UP(WORD win_vk) {
+    m_drag.Drag_end();
+    m_size.Resize_end();
+
+    if (!m_maskWinKeyUp) {
+        return false;
+    }
+
+    m_maskWinKeyUp = false;
+    Win32Api::Signal_MaskedWinKeyUp(win_vk);
+
+    return true;
 }
 
 
