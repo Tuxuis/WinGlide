@@ -19,7 +19,7 @@ class WindowManager {
         ~WindowManager();
 
         static LRESULT CALLBACK MouseProcess(int n_Code, WPARAM w_Param, LPARAM l_Param);
-        static LRESULT CALLBACK KeyboardProcess(int n_code, WPARAM w_param, LPARAM l_Param);
+        static LRESULT CALLBACK KeyboardProcess(int n_Code, WPARAM w_param, LPARAM l_Param);
 
         void Handle_Mouse_MOVE(MSLLHOOKSTRUCT* mouse_struct);
         void Hanlde_Mouse_DOWN(MSLLHOOKSTRUCT* mouse_struct);
