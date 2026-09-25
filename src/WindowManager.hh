@@ -3,12 +3,15 @@
 #include <Windows.h>
 #include "DragController.hh"
 #include "SizeController.hh"
+#include "WindowsMover.hh"
 
 
 class WindowManager {
     
     public:
         static WindowManager& getInstance();
+
+        bool Handle_WinKey_UP(WORD win_vk);
 
         bool Init();
         void Kill();
@@ -29,6 +32,9 @@ class WindowManager {
         HHOOK m_mouse_hook     = nullptr;
         HHOOK m_keyboard_hook  = nullptr;
 
-        DragController m_drag;
-        SizeController m_size;
+        WindowsMover m_mover;
+        DragController m_drag { m_mover };
+        SizeController m_size { m_mover };
+
+        bool m_maskWinKeyUp = false;
 };
