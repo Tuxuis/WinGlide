@@ -10,7 +10,7 @@ class WindowManager {
     public:
         static WindowManager& getInstance();
 
-        void Init();
+        bool Init();
         void Kill();
 
     private:
