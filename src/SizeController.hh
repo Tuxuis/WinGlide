@@ -5,7 +5,7 @@
 class SizeController {
 
     public:
-        void Resize_begin(const MSLLHOOKSTRUCT* mouse_struct);
+        bool Resize_begin(const MSLLHOOKSTRUCT* mouse_struct);
         void Resize_update(const MSLLHOOKSTRUCT* mouse_struct);
         void Resize_end();
         
@@ -22,5 +22,4 @@ class SizeController {
         int m_minHeight = 80;
 
         bool m_isActive = false;
-        bool m_sendWinKeyTap = false;
 };
